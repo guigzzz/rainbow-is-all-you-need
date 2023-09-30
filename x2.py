@@ -196,7 +196,7 @@ class X2Env(gym.Env[NDArray[np.int64], np.int64]):
         if result.valid_move:
             state.next_play = self.__generate_tile()
 
-        reward = 1 if result.valid_move else 0
+        reward = 1 if result.valid_move else -1
         return (
             obs,
             reward,
