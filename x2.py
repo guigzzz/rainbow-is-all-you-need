@@ -13,6 +13,7 @@ class State:
     min: int
     max: int
     random: Random
+    num_invalid_moves: int
     next_play: int
 
 
@@ -22,7 +23,7 @@ def make_state(seed: Optional[int] = None) -> State:
     max = 6
     random = Random(seed)
     next_play = random.randint(min, max)
-    return State(grid, min, max, random, next_play)
+    return State(grid, min, max, random, 0, next_play)
 
 
 def try_combine(grid: List[List[int]], i: int, j: int) -> Optional[List[List[int]]]:
@@ -110,13 +111,21 @@ def solve(grid: List[List[int]], start_i: int, start_j: int) -> List[List[int]]:
 
 
 def place(state: State, location: int, value: int) -> PlaceResult:
+    if value <= 0:
+        raise Exception(f"Invalid value: {value}")
+
     grid = state.grid
     if location < 0 or location > 4:
         raise Exception(f"Invalid location: {location}. Must be 0 <= location <= 4.")
 
     if grid[-1][location] > 0:
+        state.num_invalid_moves += 1
+        if state.num_invalid_moves > 5:
+            return PlaceResult(False, True, state)
         # colummn full already, do nothing
         return PlaceResult(False, False, state)
+
+    state.num_invalid_moves = 0
 
     # find spot
     filled_i = None
@@ -166,7 +175,7 @@ from numpy.typing import NDArray
 def state_to_obs(state: State) -> NDArray[np.int64]:
     normalise = state.max - 6
     flat = [state.next_play] + [c for r in state.grid for c in r]
-    arr = (np.array(flat, dtype=np.int64) - normalise) / (6 * INCREMENT_FACTOR)
+    arr = np.array(flat, dtype=np.int64) - normalise / (6 * INCREMENT_FACTOR)
     return arr
 
 
@@ -176,7 +185,7 @@ class X2Env(gym.Env[NDArray[np.int64], np.int64]):
 
         self._state: Optional[State] = None
 
-        self.action_space = gym.spaces.Discrete(4)
+        self.action_space = gym.spaces.Discrete(5)
         self.observation_space = gym.spaces.Box(
             0,
             12,
@@ -186,6 +195,9 @@ class X2Env(gym.Env[NDArray[np.int64], np.int64]):
 
     def step(self, action: np.int64):
         state = self.__get_state()
+
+        normalise = state.max - 6
+        action += normalise
 
         result = place(state, int(action), state.next_play)
 
