@@ -166,7 +166,7 @@ from numpy.typing import NDArray
 def state_to_obs(state: State) -> NDArray[np.int64]:
     normalise = state.max - 6
     flat = [state.next_play] + [c for r in state.grid for c in r]
-    arr = np.array(flat, dtype=np.int64) - normalise
+    arr = (np.array(flat, dtype=np.int64) - normalise) / (6 * INCREMENT_FACTOR)
     return arr
 
 
@@ -185,16 +185,14 @@ class X2Env(gym.Env[NDArray[np.int64], np.int64]):
         self.__info: Dict[str, str] = {}
 
     def step(self, action: np.int64):
-        if self._state is None:
-            self._state = make_state()
-
         state = self.__get_state()
 
         result = place(state, int(action), state.next_play)
-        obs = state_to_obs(result.state)
 
         if result.valid_move:
             state.next_play = self.__generate_tile()
+
+        obs = state_to_obs(result.state)
 
         reward = 1 if result.valid_move else -1
         return (
