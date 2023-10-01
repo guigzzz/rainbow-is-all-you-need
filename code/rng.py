@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import random
 
-seed = 777
+SEED = 777
 
 
 def seed_torch(seed):
@@ -14,6 +14,6 @@ def seed_torch(seed):
 
 
 def set_seeds():
-    np.random.seed(seed)
-    random.seed(seed)
-    seed_torch(seed)
+    np.random.seed(SEED)
+    random.seed(SEED)
+    seed_torch(SEED)
