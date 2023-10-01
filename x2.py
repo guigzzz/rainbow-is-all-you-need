@@ -118,6 +118,19 @@ def solve(grid: NDArray[np.float64], start_i: int, start_j: int) -> NDArray[np.f
     return grid
 
 
+def sanity_check_grid(grid: NDArray[np.float64], min: int, max: int):
+    for i in range(N - 1):
+        for j in range(N):
+            v = grid[i][j]
+            if v == 0 and grid[i + 1][j] > 0:
+                raise Exception(f"BUG")
+
+            if v > 0 and (v < min or v > max * INCREMENT_FACTOR):
+                raise Exception(
+                    f"Out of minmax bounds: {v} is < {min} or > {max * INCREMENT_FACTOR}"
+                )
+
+
 def place(state: State, location: int, value: int) -> PlaceResult:
     if value <= 0:
         raise Exception(f"Invalid value: {value}")
@@ -164,6 +177,8 @@ def place(state: State, location: int, value: int) -> PlaceResult:
             solve(state.grid, filled_i_j[0], filled_i_j[1])
 
     state.grid = grid
+
+    sanity_check_grid(grid, state.min, state.max)
 
     game_over = is_game_over(grid)
     return PlaceResult(True, game_over, state)

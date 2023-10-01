@@ -45,6 +45,20 @@ class TestX2(unittest.TestCase):
 
         self.assertEqual(state.grid.tolist(), [[8, 0, 0, 0, 0]] + [zeros] * 4)
 
+    def test_compact2(self):
+        state = make_state(seed=0)
+        place(state, 0, 1)
+        place(state, 0, 3)
+        place(state, 0, 4)
+        place(state, 0, 5)
+
+        place(state, 1, 1)
+
+        self.assertEqual(
+            state.grid.tolist(),
+            [[3, 2, 0, 0, 0], [4, 0, 0, 0, 0], [5, 0, 0, 0, 0]] + [zeros] * 2,
+        )
+
     def test_state_to_obs(self):
         state = make_state(seed=0)
         state.grid[0][0] = 13
