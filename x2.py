@@ -210,12 +210,9 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
         self._state: Optional[State] = None
 
         self.action_space = gym.spaces.Discrete(5)
-        self.observation_space = gym.spaces.Box(
-            0,
-            12,
-        )
 
         self.__observation = np.zeros((26,))
+        self.observation_space = gym.spaces.Box(0, 12, shape=self.__observation.shape)
 
         self.__info: Dict[str, str] = {}
 
