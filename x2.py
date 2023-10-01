@@ -181,10 +181,10 @@ from numpy.typing import NDArray
 
 
 def state_to_obs(state: State, arr: NDArray[np.float64]) -> NDArray[np.float64]:
-    normalise = state.max - 6
+    arr[0] = state.next_play - state.min
+    flat = state.grid.flatten()
+    arr[1:] = np.where(flat == 0, 0, flat - state.min)
 
-    arr[0] = state.next_play
-    arr[1:] = state.grid.flatten() - normalise
     return arr
 
 
@@ -207,10 +207,7 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
     def step(self, action: np.int64):
         state = self.__get_state()
 
-        normalise = state.max - 6
-        action += normalise
-
-        result = place(state, int(action), state.next_play)
+        result = place(state, int(action), state.next_play + state.min)
 
         if result.valid_move:
             state.next_play = self.__generate_tile()
