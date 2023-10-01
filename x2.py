@@ -2,14 +2,16 @@ N = 5
 
 INCREMENT_FACTOR = 2
 
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 from dataclasses import dataclass
 from random import Random
+from numpy.typing import NDArray
+import numpy as np
 
 
 @dataclass
 class State:
-    grid: List[List[int]]
+    grid: NDArray[np.float64]
     min: int
     max: int
     random: Random
@@ -18,7 +20,7 @@ class State:
 
 
 def make_state(seed: Optional[int] = None) -> State:
-    grid = [[0 for _ in range(N)] for _ in range(N)]
+    grid = np.zeros((5, 5))
     min = 1
     max = 6
     random = Random(seed)
@@ -26,7 +28,9 @@ def make_state(seed: Optional[int] = None) -> State:
     return State(grid, min, max, random, 0, next_play)
 
 
-def try_combine(grid: List[List[int]], i: int, j: int) -> Optional[List[List[int]]]:
+def try_combine(
+    grid: NDArray[np.float64], i: int, j: int
+) -> Optional[NDArray[np.float64]]:
     value = grid[i][j]
     if value == 0:
         raise Exception("nope")
@@ -49,7 +53,7 @@ def try_combine(grid: List[List[int]], i: int, j: int) -> Optional[List[List[int
     return None
 
 
-def move_down_once(grid: List[List[int]]) -> Optional[Tuple[int, int]]:
+def move_down_once(grid: NDArray[np.float64]) -> Optional[Tuple[int, int]]:
     for i in range(N - 1):
         for j in range(N):
             if grid[i][j] == 0 and grid[i + 1][j] > 0:
@@ -61,7 +65,7 @@ def move_down_once(grid: List[List[int]]) -> Optional[Tuple[int, int]]:
     return None
 
 
-def is_game_over(grid: List[List[int]]) -> bool:
+def is_game_over(grid: NDArray[np.float64]) -> bool:
     for row in grid:
         for col in row:
             if col == 0:
@@ -86,7 +90,7 @@ class PlaceResult:
     state: State
 
 
-def solve(grid: List[List[int]], start_i: int, start_j: int) -> List[List[int]]:
+def solve(grid: NDArray[np.float64], start_i: int, start_j: int) -> NDArray[np.float64]:
     filled_i = start_i
     filled_j = start_j
 
@@ -161,7 +165,7 @@ def place(state: State, location: int, value: int) -> PlaceResult:
     return PlaceResult(True, game_over, state)
 
 
-def print_grid(grid: List[List[int]]):
+def print_grid(grid: NDArray[np.float64]):
     for row in grid:
         print(" ".join(["----" if c == 0 else str(c).zfill(4) for c in row]))
 
@@ -172,14 +176,15 @@ import numpy as np
 from numpy.typing import NDArray
 
 
-def state_to_obs(state: State) -> NDArray[np.int64]:
+def state_to_obs(state: State, arr: NDArray[np.float64]) -> NDArray[np.float64]:
     normalise = state.max - 6
-    flat = [state.next_play] + [c for r in state.grid for c in r]
-    arr = np.array(flat, dtype=np.int64) - normalise / (6 * INCREMENT_FACTOR)
+
+    arr[0] = state.next_play
+    arr[1:] = state.grid.flatten() - normalise
     return arr
 
 
-class X2Env(gym.Env[NDArray[np.int64], np.int64]):
+class X2Env(gym.Env[NDArray[np.float64], np.int64]):
     def __init__(self) -> None:
         super().__init__()
 
@@ -190,6 +195,8 @@ class X2Env(gym.Env[NDArray[np.int64], np.int64]):
             0,
             12,
         )
+
+        self.__observation = np.zeros((26,))
 
         self.__info: Dict[str, str] = {}
 
@@ -204,7 +211,7 @@ class X2Env(gym.Env[NDArray[np.int64], np.int64]):
         if result.valid_move:
             state.next_play = self.__generate_tile()
 
-        obs = state_to_obs(result.state)
+        obs = state_to_obs(result.state, self.__observation)
 
         reward = 1 if result.valid_move else -1
         return (
@@ -221,7 +228,7 @@ class X2Env(gym.Env[NDArray[np.int64], np.int64]):
         self._state = make_state(seed)
         self.action_space = gym.spaces.Discrete(5, seed)
 
-        return state_to_obs(self._state), self.__info
+        return state_to_obs(self._state, self.__observation), self.__info
 
     def __generate_tile(self) -> int:
         s = self.__get_state()
