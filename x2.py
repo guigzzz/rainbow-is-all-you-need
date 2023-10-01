@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from random import Random
 from numpy.typing import NDArray
 import numpy as np
+from numba import njit
 
 
 @dataclass
@@ -28,6 +29,7 @@ def make_state(seed: Optional[int] = None) -> State:
     return State(grid, min, max, random, 0, next_play)
 
 
+@njit
 def try_combine(
     grid: NDArray[np.float64], i: int, j: int
 ) -> Optional[NDArray[np.float64]]:
@@ -53,6 +55,7 @@ def try_combine(
     return None
 
 
+@njit
 def move_down_once(grid: NDArray[np.float64]) -> Optional[Tuple[int, int]]:
     for i in range(N - 1):
         for j in range(N):
@@ -65,6 +68,7 @@ def move_down_once(grid: NDArray[np.float64]) -> Optional[Tuple[int, int]]:
     return None
 
 
+@njit
 def is_game_over(grid: NDArray[np.float64]) -> bool:
     for row in grid:
         for col in row:
@@ -89,6 +93,7 @@ class PlaceResult:
     state: State
 
 
+@njit
 def solve(grid: NDArray[np.float64], start_i: int, start_j: int) -> NDArray[np.float64]:
     filled_i = start_i
     filled_j = start_j
