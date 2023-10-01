@@ -75,8 +75,7 @@ def is_game_over(grid: NDArray[np.float64]) -> bool:
 
 
 def check_update_min_max(state: State) -> Optional[State]:
-    grid = state.grid
-    mx = max([max(r) for r in grid])
+    mx = state.grid.max()
 
     if mx >= state.max * INCREMENT_FACTOR:
         state.min += 1
