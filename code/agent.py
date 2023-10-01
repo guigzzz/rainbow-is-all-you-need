@@ -137,13 +137,13 @@ class DQNAgent:
         """Select an action from the input state."""
         # NoisyNet: no epsilon greedy action selection
 
-        selected_action = self.dqn(torch.FloatTensor(state).to(self.device))
+        selected_action = self.dqn(torch.FloatTensor(state[:-5]).to(self.device))
 
         selected_action = selected_action.detach().cpu().numpy()
 
         # print(selected_action)
 
-        selected_action = selected_action.argmax()
+        selected_action = (selected_action * state[-5:]).argmax()
 
         if not self.is_test:
             self.transition = [state, selected_action]
@@ -293,8 +293,8 @@ class DQNAgent:
     ) -> torch.Tensor:
         """Return categorical dqn loss."""
         device = self.device  # for shortening the following lines
-        state = torch.FloatTensor(samples["obs"]).to(device)
-        next_state = torch.FloatTensor(samples["next_obs"]).to(device)
+        state = torch.FloatTensor(samples["obs"][:, :-5]).to(device)
+        next_state = torch.FloatTensor(samples["next_obs"][:, :-5]).to(device)
         action = torch.LongTensor(samples["acts"]).to(device)
         reward = torch.FloatTensor(samples["rews"].reshape(-1, 1)).to(device)
         done = torch.FloatTensor(samples["done"].reshape(-1, 1)).to(device)

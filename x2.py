@@ -200,7 +200,9 @@ def state_to_obs(state: State, arr: NDArray[np.float64]) -> NDArray[np.float64]:
     flat = state.grid.flatten()
     arr[1:] = np.where(flat == 0, 0, flat - state.min)
 
-    return arr
+    valid_move_mask = state.grid[-1] == 0
+
+    return np.concatenate([arr, valid_move_mask])
 
 
 class X2Env(gym.Env[NDArray[np.float64], np.int64]):
