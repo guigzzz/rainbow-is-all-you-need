@@ -204,19 +204,19 @@ class TestX2(unittest.TestCase):
             3,
         )
 
-    # def test_state_to_obs(self):
-    #     state = make_state(seed=0)
-    #     state.grid[0][0] = 13
-    #     state.grid[0][1] = 2
-    #     state.max = 7
-    #     state.min = 1
-    #     state.next_play = 7
+    def test_state_to_obs(self):
+        state = make_state(seed=0)
+        state.grid[0][0] = 13
+        state.grid[0][1] = 2
+        state.max = 7
+        state.min = 1
+        state.next_play = 7
 
-    #     arr = np.zeros((26,))
+        arr = np.zeros((26,))
 
-    #     obs = state_to_obs(state, arr)
+        obs = state_to_obs(state, arr)
 
-    #     self.assertEqual(obs.tolist(), [6, 12, 1] + [0] * 23)
+        self.assertEqual(obs.tolist(), [6, 12, 1] + [0] * 23 + [1] * 5)
 
     def run_test(
         self,
