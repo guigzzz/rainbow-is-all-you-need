@@ -23,7 +23,7 @@ from io import TextIOWrapper
 class Game:
     def __init__(self, file: TextIOWrapper, state: Optional[State] = None):
         self.move_file = file
-        self.state = state or make_state(seed=0)
+        self.state = state or make_state()
 
         self.print_state()
 
@@ -97,9 +97,7 @@ def read_existing() -> Optional[State]:
     min = 1 + (0 if mx < 12 else mx - 12 + 1)
     max = 6 + (0 if mx < 12 else mx - 12 + 1)
 
-    return State(
-        grid, grid.max() - 12, grid.max() - 6, Random(0), 0, int(start["next_value"])
-    )
+    return State(grid, min, max, Random(), 0, int(start["next_value"]))
 
 
 def main():
