@@ -97,7 +97,7 @@ def read_existing() -> Optional[State]:
 
     start = json.loads(lines[-1])
     print(start)
-    return State(np.array(start["after"]), 1, 6, Random(0), 0, int(start["play"]))
+    return State(np.array(start["after"]), 1, 6, Random(0), 0, int(start["next_value"]))
 
 
 state = read_existing()

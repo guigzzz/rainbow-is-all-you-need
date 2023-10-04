@@ -65,6 +65,20 @@ def move_down_once(grid: NDArray[np.float64]) -> Optional[Tuple[int, int]]:
     return None
 
 
+def try_move_down(
+    grid: NDArray[np.float64], i: int, j: int
+) -> Optional[Tuple[int, int]]:
+    if i == 0:
+        return None
+
+    if i > 0 and grid[i][j] > 0 and grid[i - 1][j] == 0:
+        grid[i - 1][j] = grid[i][j]
+        grid[i][j] = 0
+        return (i - 1, j)
+
+    return None
+
+
 def is_game_over(grid: NDArray[np.float64]) -> bool:
     for row in grid:
         for col in row:
@@ -100,6 +114,11 @@ def solve(grid: NDArray[np.float64], start_i: int, start_j: int) -> NDArray[np.f
         new_grid = try_combine(grid, filled_i, filled_j)
         while new_grid is not None:
             dirty = True
+
+            filled_i_j = try_move_down(grid, filled_i, filled_j)
+            if filled_i_j is not None:
+                filled_i, filled_j = filled_i_j
+
             new_grid = try_combine(grid, filled_i, filled_j)
 
         filled_i_j = move_down_once(grid)

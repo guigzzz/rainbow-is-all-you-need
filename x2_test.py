@@ -2,6 +2,7 @@ from x2 import make_state, place, state_to_obs, print_grid
 import numpy as np
 
 import unittest
+from typing import List
 
 zeros = [0, 0, 0, 0, 0]
 
@@ -123,6 +124,26 @@ class TestX2(unittest.TestCase):
             ],
         )
 
+    def test_compact6(self):
+        self.run_test(
+            [
+                [1.0, 3.0, 9.0, 5.0, 6.0],
+                [0.0, 2.0, 0.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ],
+            [
+                [2.0, 3.0, 9.0, 5.0, 6.0],
+                [0.0, 2.0, 0.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ],
+            0,
+            1,
+        )
+
     # def test_state_to_obs(self):
     #     state = make_state(seed=0)
     #     state.grid[0][0] = 13
@@ -136,6 +157,18 @@ class TestX2(unittest.TestCase):
     #     obs = state_to_obs(state, arr)
 
     #     self.assertEqual(obs.tolist(), [6, 12, 1] + [0] * 23)
+
+    def run_test(
+        self,
+        start: List[List[float]],
+        end: List[List[float]],
+        location: int,
+        value: int,
+    ):
+        state = make_state(seed=0)
+        state.grid = np.array(start)
+        place(state, location, value)
+        self.assertEqual(state.grid.tolist(), end)
 
 
 if __name__ == "__main__":
