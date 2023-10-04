@@ -91,9 +91,12 @@ def is_game_over(grid: NDArray[np.float64]) -> bool:
 def check_update_min_max(state: State) -> Optional[State]:
     mx = state.grid.max()
 
-    if mx >= state.max * INCREMENT_FACTOR:
+    if mx >= state.max + 6:
         state.min += 1
         state.max += 1
+        return state
+
+    return None
 
 
 @dataclass
@@ -137,10 +140,24 @@ def sanity_check_grid(grid: NDArray[np.float64], min: int, max: int):
             if v == 0 and grid[i + 1][j] > 0:
                 raise Exception(f"BUG")
 
-            if v > 0 and (v < min or v > max * INCREMENT_FACTOR):
-                raise Exception(
-                    f"Out of minmax bounds: {v} is < {min} or > {max * INCREMENT_FACTOR}"
-                )
+            if v > 0 and (v < min or v > max + 6):
+                print(v, i, j)
+                raise Exception(f"Out of minmax bounds: {v} is < {min} or > {max + 6}")
+
+
+def find_prev_min(state: State) -> Optional[Tuple[int, int]]:
+    prev_min = state.min - 1
+    for i in range(N):
+        for j in range(N):
+            if state.grid[i][j] == prev_min:
+                state.grid[i][j] = 0
+
+                if j < 4 and state.grid[i][j + 1] > 0:
+                    filled_i_j = try_move_down(state.grid, i, j + 1)
+                    if filled_i_j is not None:
+                        return filled_i_j
+
+    return None
 
 
 def place(state: State, location: int, value: int) -> PlaceResult:
@@ -184,17 +201,10 @@ def place(state: State, location: int, value: int) -> PlaceResult:
     update_min_max = check_update_min_max(state)
     if update_min_max is not None:
         # delete all prev mins
-        prev_min = state.min - 1
-        for i in range(N):
-            for j in range(N):
-                if state.grid[i][j] == prev_min:
-                    state.grid[i][j] = 0
-
-        filled_i_j = move_down_once(state.grid)
-        if filled_i_j is not None:
-            solve(state.grid, filled_i_j[0], filled_i_j[1])
-
-    state.grid = grid
+        prev_min_ij = find_prev_min(state)
+        while prev_min_ij is not None:
+            solve(state.grid, prev_min_ij[0], prev_min_ij[1])
+            prev_min_ij = find_prev_min(state)
 
     sanity_check_grid(grid, state.min, state.max)
 
