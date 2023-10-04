@@ -8,141 +8,141 @@ zeros = [0, 0, 0, 0, 0]
 
 
 class TestX2(unittest.TestCase):
-    # def test_basic(self):
-    #     state = make_state(seed=0)
-    #     place(state, 0, 6)
+    def test_basic(self):
+        state = make_state(seed=0)
+        place(state, 0, 6)
 
-    #     self.assertEqual(state.grid.tolist(), [[6, 0, 0, 0, 0]] + [zeros] * 4)
+        self.assertEqual(state.grid.tolist(), [[6, 0, 0, 0, 0]] + [zeros] * 4)
 
-    #     place(state, 0, 6)
+        place(state, 0, 6)
 
-    #     self.assertEqual(state.grid.tolist(), [[7, 0, 0, 0, 0]] + [zeros] * 4)
+        self.assertEqual(state.grid.tolist(), [[7, 0, 0, 0, 0]] + [zeros] * 4)
 
-    #     place(state, 0, 6)
+        place(state, 0, 6)
 
-    #     self.assertEqual(
-    #         state.grid.tolist(), [[7, 0, 0, 0, 0], [6, 0, 0, 0, 0]] + [zeros] * 3
-    #     )
+        self.assertEqual(
+            state.grid.tolist(), [[7, 0, 0, 0, 0], [6, 0, 0, 0, 0]] + [zeros] * 3
+        )
 
-    #     place(state, 1, 6)
+        place(state, 1, 6)
 
-    #     self.assertEqual(
-    #         state.grid.tolist(), [[7, 6, 0, 0, 0], [6, 0, 0, 0, 0]] + [zeros] * 3
-    #     )
+        self.assertEqual(
+            state.grid.tolist(), [[7, 6, 0, 0, 0], [6, 0, 0, 0, 0]] + [zeros] * 3
+        )
 
-    #     place(state, 1, 6)
+        place(state, 1, 6)
 
-    #     self.assertEqual(state.grid.tolist(), [[7, 8, 0, 0, 0]] + [zeros] * 4)
+        self.assertEqual(state.grid.tolist(), [[7, 8, 0, 0, 0]] + [zeros] * 4)
 
-    #     place(state, 0, 7)
+        place(state, 0, 7)
 
-    #     self.assertEqual(state.grid.tolist(), [[9, 0, 0, 0, 0]] + [zeros] * 4)
+        self.assertEqual(state.grid.tolist(), [[9, 0, 0, 0, 0]] + [zeros] * 4)
 
-    # def test_compact(self):
-    #     state = make_state(seed=0)
-    #     place(state, 0, 6)
-    #     place(state, 0, 7)
-    #     place(state, 1, 6)
+    def test_compact(self):
+        state = make_state(seed=0)
+        place(state, 0, 6)
+        place(state, 0, 7)
+        place(state, 1, 6)
 
-    #     self.assertEqual(state.grid.tolist(), [[8, 0, 0, 0, 0]] + [zeros] * 4)
+        self.assertEqual(state.grid.tolist(), [[8, 0, 0, 0, 0]] + [zeros] * 4)
 
-    # def test_compact2(self):
-    #     state = make_state(seed=0)
-    #     place(state, 0, 1)
-    #     place(state, 0, 3)
-    #     place(state, 0, 4)
-    #     place(state, 0, 5)
+    def test_compact2(self):
+        state = make_state(seed=0)
+        place(state, 0, 1)
+        place(state, 0, 3)
+        place(state, 0, 4)
+        place(state, 0, 5)
 
-    #     place(state, 1, 1)
+        place(state, 1, 1)
 
-    #     self.assertEqual(
-    #         state.grid.tolist(),
-    #         [[3, 2, 0, 0, 0], [4, 0, 0, 0, 0], [5, 0, 0, 0, 0]] + [zeros] * 2,
-    #     )
+        self.assertEqual(
+            state.grid.tolist(),
+            [[3, 2, 0, 0, 0], [4, 0, 0, 0, 0], [5, 0, 0, 0, 0]] + [zeros] * 2,
+        )
 
-    # def test_compact3(self):
-    #     state = make_state(seed=0)
-    #     place(state, 0, 5)
-    #     place(state, 1, 4)
-    #     place(state, 2, 6)
-    #     place(state, 0, 1)
+    def test_compact3(self):
+        state = make_state(seed=0)
+        place(state, 0, 5)
+        place(state, 1, 4)
+        place(state, 2, 6)
+        place(state, 0, 1)
 
-    #     place(state, 1, 4)
+        place(state, 1, 4)
 
-    #     self.assertEqual(
-    #         state.grid.tolist(),
-    #         [[1, 7, 0, 0, 0]] + [zeros] * 4,
-    #     )
+        self.assertEqual(
+            state.grid.tolist(),
+            [[1, 7, 0, 0, 0]] + [zeros] * 4,
+        )
 
-    # def test_compact4(self):
-    #     grid = [
-    #         [2.0, 7.0, 6.0, 5.0, 6.0],
-    #         [0.0, 4.0, 5.0, 0.0, 0.0],
-    #         [0.0, 2.0, 4.0, 0.0, 0.0],
-    #         [0.0, 0.0, 0.0, 0.0, 0.0],
-    #         [0.0, 0.0, 0.0, 0.0, 0.0],
-    #     ]
+    def test_compact4(self):
+        grid = [
+            [2.0, 7.0, 6.0, 5.0, 6.0],
+            [0.0, 4.0, 5.0, 0.0, 0.0],
+            [0.0, 2.0, 4.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0],
+        ]
 
-    #     state = make_state(seed=0)
-    #     state.grid = np.array(grid)
+        state = make_state(seed=0)
+        state.grid = np.array(grid)
 
-    #     place(state, 3, 5)
+        place(state, 3, 5)
 
-    #     self.assertEqual(
-    #         state.grid.tolist(),
-    #         [
-    #             [2.0, 7.0, 6.0, 7.0, 6.0],
-    #             [0.0, 2.0, 5.0, 0.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #         ],
-    #     )
+        self.assertEqual(
+            state.grid.tolist(),
+            [
+                [2.0, 7.0, 6.0, 7.0, 6.0],
+                [0.0, 2.0, 5.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ],
+        )
 
-    # def test_compact5(self):
-    #     grid = [
-    #         [2.0, 7.0, 6.0, 8.0, 6.0],
-    #         [1.0, 2.0, 5.0, 4.0, 0.0],
-    #         [0.0, 0.0, 4.0, 0.0, 0.0],
-    #         [0.0, 0.0, 3.0, 0.0, 0.0],
-    #         [0.0, 0.0, 0.0, 0.0, 0.0],
-    #     ]
+    def test_compact5(self):
+        grid = [
+            [2.0, 7.0, 6.0, 8.0, 6.0],
+            [1.0, 2.0, 5.0, 4.0, 0.0],
+            [0.0, 0.0, 4.0, 0.0, 0.0],
+            [0.0, 0.0, 3.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0],
+        ]
 
-    #     state = make_state(seed=0)
-    #     state.grid = np.array(grid)
+        state = make_state(seed=0)
+        state.grid = np.array(grid)
 
-    #     place(state, 2, 3)
+        place(state, 2, 3)
 
-    #     self.assertEqual(
-    #         state.grid.tolist(),
-    #         [
-    #             [1.0, 3.0, 9.0, 4.0, 6.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #         ],
-    #     )
+        self.assertEqual(
+            state.grid.tolist(),
+            [
+                [1.0, 3.0, 9.0, 4.0, 6.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ],
+        )
 
-    # def test_compact6(self):
-    #     self.run_test(
-    #         [
-    #             [1.0, 3.0, 9.0, 5.0, 6.0],
-    #             [0.0, 2.0, 0.0, 4.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #         ],
-    #         [
-    #             [2.0, 3.0, 9.0, 5.0, 6.0],
-    #             [0.0, 2.0, 0.0, 4.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #             [0.0, 0.0, 0.0, 0.0, 0.0],
-    #         ],
-    #         0,
-    #         1,
-    #     )
+    def test_compact6(self):
+        self.run_test(
+            [
+                [1.0, 3.0, 9.0, 5.0, 6.0],
+                [0.0, 2.0, 0.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ],
+            [
+                [2.0, 3.0, 9.0, 5.0, 6.0],
+                [0.0, 2.0, 0.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ],
+            0,
+            1,
+        )
 
     def test_compact7(self):
         self.run_test(
@@ -161,6 +161,26 @@ class TestX2(unittest.TestCase):
                 [0.0, 0.0, 0.0, 0.0, 0.0],
             ],
             3,
+            5,
+        )
+
+    def test_compact8(self):
+        self.run_test(
+            [
+                [4.0, 7.0, 9.0, 6.0, 8.0],
+                [2.0, 5.0, 7.0, 0.0, 0.0],
+                [0.0, 0.0, 5.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ],
+            [
+                [4.0, 10.0, 0.0, 6.0, 8.0],
+                [2.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ],
+            1,
             5,
         )
 
