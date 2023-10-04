@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from random import Random
 from numpy.typing import NDArray
 import numpy as np
-from numba import njit
 
 
 @dataclass
@@ -29,7 +28,6 @@ def make_state(seed: Optional[int] = None) -> State:
     return State(grid, min, max, random, 0, next_play)
 
 
-@njit
 def try_combine(
     grid: NDArray[np.float64], i: int, j: int
 ) -> Optional[NDArray[np.float64]]:
@@ -55,7 +53,6 @@ def try_combine(
     return None
 
 
-@njit
 def move_down_once(grid: NDArray[np.float64]) -> Optional[Tuple[int, int]]:
     for i in range(N - 1):
         for j in range(N):
@@ -68,7 +65,6 @@ def move_down_once(grid: NDArray[np.float64]) -> Optional[Tuple[int, int]]:
     return None
 
 
-@njit
 def is_game_over(grid: NDArray[np.float64]) -> bool:
     for row in grid:
         for col in row:
@@ -93,7 +89,6 @@ class PlaceResult:
     state: State
 
 
-@njit
 def solve(grid: NDArray[np.float64], start_i: int, start_j: int) -> NDArray[np.float64]:
     filled_i = start_i
     filled_j = start_j
@@ -103,14 +98,12 @@ def solve(grid: NDArray[np.float64], start_i: int, start_j: int) -> NDArray[np.f
         dirty = False
 
         new_grid = try_combine(grid, filled_i, filled_j)
-        if new_grid is not None:
+        while new_grid is not None:
             dirty = True
-            filled_i_j = move_down_once(new_grid)
-
-            if filled_i_j is not None:
-                filled_i, filled_j = filled_i_j
+            new_grid = try_combine(grid, filled_i, filled_j)
 
         filled_i_j = move_down_once(grid)
+
         if filled_i_j is not None:
             dirty = True
             filled_i, filled_j = filled_i_j
@@ -186,7 +179,7 @@ def place(state: State, location: int, value: int) -> PlaceResult:
 
 def print_grid(grid: NDArray[np.float64]):
     for row in grid:
-        print(" ".join(["----" if c == 0 else str(c).zfill(4) for c in row]))
+        print(" ".join(["----" if c == 0 else str(int(c)).zfill(4) for c in row]))
 
 
 import gymnasium as gym
