@@ -78,11 +78,6 @@ class Game:
 
 
 MOVES_FILE = "moves.jsonl"
-if path.exists(MOVES_FILE):
-    with open(MOVES_FILE, "r") as f:
-        lines = f.readlines()
-
-        start = lines[-1]
 
 
 def read_existing() -> Optional[State]:
@@ -97,14 +92,19 @@ def read_existing() -> Optional[State]:
 
     start = json.loads(lines[-1])
     print(start)
-    return State(np.array(start["after"]), 1, 6, Random(0), 0, int(start["next_value"]))
+    return State(np.array(start["after"]), 1, 6, Random(0), 0, int(start["play"]))
 
 
-state = read_existing()
+def main():
+    state = read_existing()
 
-with open("moves.jsonl", "a") as f:
-    g = Game(f, state=state)
+    with open("moves.jsonl", "a") as f:
+        g = Game(f, state=state)
 
-    listen_keyboard(
-        on_press=g.step_game,
-    )
+        listen_keyboard(
+            on_press=g.step_game,
+        )
+
+
+if __name__ == "__main__":
+    main()

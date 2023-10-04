@@ -202,6 +202,17 @@ def place(state: State, location: int, value: int) -> PlaceResult:
     return PlaceResult(True, game_over, state)
 
 
+def apply_move(state: State, move: int) -> Tuple[State, int, bool]:
+    result = place(state, move, state.next_play)
+
+    if result.valid_move:
+        state.next_play = state.random.randint(state.min, state.max)
+
+    reward = 1 if result.valid_move else 0
+
+    return (result.state, reward, result.game_over)
+
+
 def print_grid(grid: NDArray[np.float64]):
     for row in grid:
         print(" ".join(["----" if c == 0 else str(int(c)).zfill(4) for c in row]))
@@ -218,7 +229,7 @@ def state_to_obs(state: State, arr: NDArray[np.float64]) -> NDArray[np.float64]:
     flat = state.grid.flatten()
     arr[1:] = np.where(flat == 0, 0, flat - state.min)
 
-    valid_move_mask = state.grid[-1] == 0
+    valid_move_mask = (state.grid[-1] == 0) | (state.grid[-1] == state.next_play)
 
     return np.concatenate([arr, valid_move_mask])
 
