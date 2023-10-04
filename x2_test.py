@@ -204,7 +204,7 @@ class TestX2(unittest.TestCase):
             3,
         )
 
-    def test_compact9(self):
+    def test_compact92(self):
         self.run_test(
             [
                 [8.0, 11.0, 8.0, 9.0, 7.0],
@@ -378,6 +378,50 @@ class TestX2(unittest.TestCase):
             }
         )
 
+    def test_compact17(self):
+        self.run_test_move(
+            {
+                "before": [
+                    [9.0, 10.0, 12.0, 9.0, 10.0],
+                    [0.0, 9.0, 2.0, 7.0, 8.0],
+                    [0.0, 2.0, 7.0, 5.0, 4.0],
+                    [0.0, 0.0, 0.0, 7.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0],
+                ],
+                "after": [
+                    [9.0, 10.0, 12.0, 11.0, 8.0],
+                    [0.0, 9.0, 2.0, 0.0, 6.0],
+                    [0.0, 2.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0],
+                ],
+                "next_value": 4,
+                "play": 4,
+            }
+        )
+
+    def test_compact18(self):
+        self.run_test_move(
+            {
+                "before": [
+                    [11.0, 10.0, 12.0, 11.0, 9.0],
+                    [4.0, 8.0, 9.0, 8.0, 6.0],
+                    [2.0, 7.0, 0.0, 7.0, 4.0],
+                    [0.0, 0.0, 0.0, 6.0, 0.0],
+                    [0.0, 0.0, 0.0, 5.0, 0.0],
+                ],
+                "after": [
+                    [4.0, 13.0, 0.0, 11.0, 9.0],
+                    [0.0, 0.0, 0.0, 8.0, 6.0],
+                    [0.0, 0.0, 0.0, 7.0, 4.0],
+                    [0.0, 0.0, 0.0, 6.0, 0.0],
+                    [0.0, 0.0, 0.0, 5.0, 0.0],
+                ],
+                "next_value": 7,
+                "play": 1,
+            }
+        )
+
     def test_state_to_obs(self):
         state = make_state(seed=0)
         state.grid[0][0] = 13
@@ -398,7 +442,13 @@ class TestX2(unittest.TestCase):
     ):
         state = make_state(seed=0)
         state.grid = np.array(move["before"])
+
+        mx = state.grid.max()
+        state.min = 1 + (0 if mx < 12 else mx - 12 + 1)
+        state.max = 6 + (0 if mx < 12 else mx - 12 + 1)
+
         place(state, move["play"], move["next_value"])
+
         self.assertEqual(state.grid.tolist(), move["after"])
 
     def run_test(

@@ -91,8 +91,15 @@ def read_existing() -> Optional[State]:
         return None
 
     start = json.loads(lines[-1])
-    print(start)
-    return State(np.array(start["after"]), 1, 6, Random(0), 0, int(start["next_value"]))
+    grid = np.array(start["after"])
+
+    mx = grid.max()
+    min = 1 + (0 if mx < 12 else mx - 12 + 1)
+    max = 6 + (0 if mx < 12 else mx - 12 + 1)
+
+    return State(
+        grid, grid.max() - 12, grid.max() - 6, Random(0), 0, int(start["next_value"])
+    )
 
 
 def main():
