@@ -151,11 +151,12 @@ def place(state: State, location: int, value: int) -> PlaceResult:
     if location < 0 or location > 4:
         raise Exception(f"Invalid location: {location}. Must be 0 <= location <= 4.")
 
-    if grid[-1][location] > 0:
+    if grid[-1][location] > 0 and grid[-1][location] != value:
         state.num_invalid_moves += 1
         if state.num_invalid_moves > 5:
             return PlaceResult(False, True, state)
         # colummn full already, do nothing
+        # EXCEPT if value inserted matches top of the column
         return PlaceResult(False, False, state)
 
     state.num_invalid_moves = 0
@@ -167,6 +168,11 @@ def place(state: State, location: int, value: int) -> PlaceResult:
             grid[i][location] = value
             filled_i = i
             break
+
+        # placing on full column. Just increment the top value
+        if i == N - 1 and grid[i][location] == value:
+            filled_i = i
+            grid[i][location] += 1
 
     if filled_i is None:
         raise Exception("impossible")
