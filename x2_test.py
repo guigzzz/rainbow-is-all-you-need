@@ -456,7 +456,7 @@ class TestX2(unittest.TestCase):
 
         obs = state_to_obs(state, arr)
 
-        self.assertEqual(obs.tolist(), [6, 12, 1] + [0] * 23 + [1] * 5)
+        self.assertEqual(obs.tolist(), [6, 12, 1] + [0] * 23)
 
     def run_test_move(
         self,

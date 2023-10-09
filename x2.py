@@ -141,7 +141,6 @@ def sanity_check_grid(grid: NDArray[np.float64], min: int, max: int):
                 raise Exception(f"BUG")
 
             if v > 0 and (v < min or v > max + 6):
-                print(v, i, j)
                 raise Exception(f"Out of minmax bounds: {v} is < {min} or > {max + 6}")
 
 
@@ -239,9 +238,7 @@ def state_to_obs(state: State, arr: NDArray[np.float64]) -> NDArray[np.float64]:
     flat = state.grid.flatten()
     arr[1:] = np.where(flat == 0, 0, flat - state.min)
 
-    valid_move_mask = (state.grid[-1] == 0) | (state.grid[-1] == state.next_play)
-
-    return np.concatenate([arr, valid_move_mask])
+    return arr
 
 
 class X2Env(gym.Env[NDArray[np.float64], np.int64]):
@@ -258,9 +255,9 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
         self.__info: Dict[str, str] = {}
 
     def step(self, action: np.int64):
-        state = self.__get_state()
+        state = self.get_state()
 
-        result = place(state, int(action), state.next_play + state.min)
+        result = place(state, int(action), state.next_play)
 
         if result.valid_move:
             state.next_play = self.__generate_tile()
@@ -285,10 +282,10 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
         return state_to_obs(self._state, self.__observation), self.__info
 
     def __generate_tile(self) -> int:
-        s = self.__get_state()
+        s = self.get_state()
         return s.random.randint(s.min, s.max)
 
-    def __get_state(self) -> State:
+    def get_state(self) -> State:
         if self._state is None:
             self._state = make_state()
 
