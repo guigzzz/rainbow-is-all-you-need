@@ -12,7 +12,7 @@ def main():
     uuid = "3eccbcb1-894f-4721-810b-fd5d0279cb73"
     model, offset = load_from_checkpoint(uuid)
 
-    for i in range(1, 100):
+    for i in range(100):
         model.learn(total_timesteps=N)
         rewards = eval_model(model)
 
