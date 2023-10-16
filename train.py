@@ -1,6 +1,7 @@
 from eval import eval_model
 from checkpoint import load_from_checkpoint
 import json
+import logging as log
 
 
 def main():
@@ -16,7 +17,7 @@ def main():
         rewards = eval_model(model)
 
         iters = (offset + N * (i + 1)) / 1000
-        print(
+        log.info(
             f"after {iters}k learning steps, mean rewards: {rewards.mean():0.2f}, std={rewards.std():0.2f}"
         )
 
@@ -30,5 +31,11 @@ def main():
 
 
 if __name__ == "__main__":
-    print("## train.py ##")
+    log.basicConfig(
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        level=log.INFO,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    log.info("## train.py ##")
     main()

@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Tuple
 from x2 import X2Env
 from stable_baselines3 import PPO
+import logging as log
 
 
 def load_from_checkpoint(uuid: str) -> Tuple[PPO, int]:
@@ -20,7 +21,7 @@ def load_from_checkpoint(uuid: str) -> Tuple[PPO, int]:
         reversed(sorted([(f, parse_iters(f)) for f in files], key=lambda tup: tup[1]))
     )
 
-    print(f"Loading latest model: {last}")
+    log.info(f"Loading latest model: {last}")
 
     env = X2Env()
     model = PPO("MlpPolicy", env, seed=0, learning_rate=0.0001, batch_size=256)
