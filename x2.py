@@ -99,15 +99,15 @@ def is_game_over(grid: NDArray[np.float64]) -> bool:
     return True
 
 
-def check_update_min_max(state: State) -> Optional[State]:
+def check_update_min_max(state: State) -> bool:
     mx = state.grid.max()
 
     if mx >= state.max + 6:
         state.min += 1
         state.max += 1
-        return state
+        return True
 
-    return None
+    return False
 
 
 @dataclass
@@ -167,8 +167,8 @@ def find_prev_min(state: State) -> Optional[Tuple[int, int]]:
             if state.grid[i][j] == prev_min:
                 state.grid[i][j] = 0
 
-                if j < 4 and state.grid[i][j + 1] > 0:
-                    filled_i_j = try_move_down(state.grid, i, j + 1)
+                if i < 4 and state.grid[i + 1][j] > 0:
+                    filled_i_j = try_move_down(state.grid, i + 1, j)
                     if filled_i_j is not None:
                         return filled_i_j
 
@@ -213,8 +213,7 @@ def place(state: State, location: int, value: int) -> PlaceResult:
 
     solve(grid, filled_i, filled_j)
 
-    update_min_max = check_update_min_max(state)
-    if update_min_max is not None:
+    if check_update_min_max(state):
         # delete all prev mins
         prev_min_ij = find_prev_min(state)
         while prev_min_ij is not None:

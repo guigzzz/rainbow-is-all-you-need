@@ -444,6 +444,51 @@ class TestX2(unittest.TestCase):
             }
         )
 
+    def test_compact20(self):
+        self.run_test_move(
+            {
+                "before": [
+                    [11, 10, 4, 7, 8],
+                    [0, 9, 1, 6, 7],
+                    [0, 8, 4, 5, 6],
+                    [0, 7, 1, 4, 5],
+                    [0, 6, 0, 0, 0],
+                ],
+                "after": [
+                    [0, 12, 5, 7, 8],
+                    [0, 0, 0, 6, 7],
+                    [0, 0, 0, 5, 6],
+                    [0, 0, 0, 4, 5],
+                    [0, 0, 0, 0, 0],
+                ],
+                "next_value": 6,
+                "play": 1,
+            },
+            new_min=2,
+            new_max=7,
+        )
+
+    def test_compact21(self):
+        self.run_test_move(
+            {
+                "before": [
+                    [11, 0, 4, 0, 0],
+                    [0, 0, 1, 0, 0],
+                    [0, 0, 4, 0, 0],
+                    [0, 0, 1, 0, 0],
+                    zeros,
+                ],
+                "after": [
+                    [12, 0, 5, 0, 0],
+                ]
+                + [zeros] * 4,
+                "next_value": 11,
+                "play": 0,
+            },
+            new_min=2,
+            new_max=7,
+        )
+
     def test_state_to_obs(self):
         state = make_state(seed=0)
         state.grid[0][0] = 13
@@ -458,10 +503,7 @@ class TestX2(unittest.TestCase):
 
         self.assertEqual(obs.tolist(), [6, 12, 1] + [0] * 23)
 
-    def run_test_move(
-        self,
-        move,
-    ):
+    def run_test_move(self, move, new_min=None, new_max=None):
         state = make_state(seed=0)
         state.grid = np.array(move["before"])
 
@@ -472,6 +514,12 @@ class TestX2(unittest.TestCase):
         place(state, move["play"], move["next_value"])
 
         self.assertEqual(state.grid.tolist(), move["after"])
+
+        if new_min is not None:
+            self.assertEqual(state.min, new_min)
+
+        if new_max is not None:
+            self.assertEqual(state.max, new_max)
 
     def run_test(
         self,
