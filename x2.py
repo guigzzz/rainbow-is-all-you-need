@@ -19,6 +19,17 @@ class State:
     next_play: int
 
 
+def copy(state: State) -> State:
+    return State(
+        state.grid.copy(),
+        state.min,
+        state.max,
+        Random(state.random.seed),
+        state.num_invalid_moves,
+        state.next_play,
+    )
+
+
 def make_state(seed: Optional[int] = None) -> State:
     grid = np.zeros((5, 5))
     min = 1
@@ -234,9 +245,10 @@ from numpy.typing import NDArray
 
 
 def state_to_obs(state: State, arr: NDArray[np.float64]) -> NDArray[np.float64]:
-    arr[0] = state.next_play - state.min
+    offset = state.min - 1
+    arr[0] = state.next_play - offset
     flat = state.grid.flatten()
-    arr[1:] = np.where(flat == 0, 0, flat - state.min)
+    arr[1:] = np.where(flat == 0, 0, flat - offset)
 
     return arr
 
@@ -250,7 +262,9 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
         self.action_space = gym.spaces.Discrete(5)
 
         self.__observation = np.zeros((26,))
-        self.observation_space = gym.spaces.Box(0, 12, shape=self.__observation.shape)
+        self.observation_space = gym.spaces.Box(
+            0, 12, shape=self.__observation.shape, dtype=np.float64
+        )
 
         self.__info: Dict[str, str] = {}
 
@@ -273,9 +287,7 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
             self.__info,
         )
 
-    def reset(
-        self, *, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
-    ):
+    def reset(self, *, seed: Optional[int] = None, _: Optional[Dict[str, Any]] = None):
         self._state = make_state(seed)
         self.action_space = gym.spaces.Discrete(5, seed)
 

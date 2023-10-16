@@ -449,7 +449,7 @@ class TestX2(unittest.TestCase):
         state.grid[0][0] = 13
         state.grid[0][1] = 2
         state.max = 7
-        state.min = 1
+        state.min = 2
         state.next_play = 7
 
         arr = np.zeros((26,))
@@ -484,6 +484,33 @@ class TestX2(unittest.TestCase):
         state.grid = np.array(start)
         place(state, location, value)
         self.assertEqual(state.grid.tolist(), end)
+
+
+from x2 import X2Env
+
+
+class TestEnv(unittest.TestCase):
+    def test_basic(self):
+        env = X2Env()
+        env.reset(seed=0)
+
+        self.assertEqual(env.get_state().next_play, 4)
+
+        obs, reward, game_over, _, _ = env.step(np.int64(0))
+
+        expected = [4, 4] + [0] * 24
+        self.assertEqual(obs.tolist(), expected)
+        self.assertEqual(reward, 1)
+        self.assertFalse(game_over)
+        self.assertEqual(env.get_state().next_play, 4)
+
+        obs, reward, game_over, _, _ = env.step(np.int64(2))
+
+        expected = [1, 4, 0, 4, 0] + [0] * 21
+        self.assertEqual(obs.tolist(), expected)
+        self.assertEqual(reward, 1)
+        self.assertFalse(game_over)
+        self.assertEqual(env.get_state().next_play, 1)
 
 
 if __name__ == "__main__":
