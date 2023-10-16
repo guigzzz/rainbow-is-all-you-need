@@ -266,6 +266,9 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
             0, 12, shape=self.__observation.shape, dtype=np.float64
         )
 
+        self.__is_game_over = False
+        self.__total_reward = 0
+
         self.__info: Dict[str, str] = {}
 
     def step(self, action: np.int64):
@@ -278,7 +281,10 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
 
         obs = state_to_obs(result.state, self.__observation)
 
+        self.__is_game_over = result.game_over
+
         reward = 1 if result.valid_move else -1
+        self.__total_reward += reward
         return (
             obs,
             reward,
@@ -302,6 +308,15 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
             self._state = make_state()
 
         return self._state
+
+    def get_observation(self) -> NDArray[np.float64]:
+        return self.__observation
+
+    def is_game_over(self) -> bool:
+        return self.__is_game_over
+
+    def get_total_reward(self) -> int:
+        return self.__total_reward
 
     def render(self) -> None:
         return None
