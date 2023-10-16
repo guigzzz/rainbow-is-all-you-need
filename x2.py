@@ -144,14 +144,16 @@ def solve(grid: NDArray[np.float64], start_i: int, start_j: int) -> NDArray[np.f
     return grid
 
 
-def sanity_check_grid(grid: NDArray[np.float64], state: State):
+def sanity_check_grid(
+    grid: NDArray[np.float64], state: State, location: int, value: int
+):
     min, max = state.min, state.max
     for i in range(N - 1):
         for j in range(N):
             v = grid[i][j]
             if v == 0 and grid[i + 1][j] > 0:
                 print_grid(grid)
-                print(min, max, state.next_play)
+                print(min, max, state.next_play, location, value)
                 raise Exception(f"BUG")
 
             if v > 0 and (v < min or v > max + 6):
@@ -219,7 +221,7 @@ def place(state: State, location: int, value: int) -> PlaceResult:
             solve(state.grid, prev_min_ij[0], prev_min_ij[1])
             prev_min_ij = find_prev_min(state)
 
-    sanity_check_grid(grid, state)
+    sanity_check_grid(grid, state, location, value)
 
     game_over = is_game_over(grid)
     return PlaceResult(True, game_over, state)
