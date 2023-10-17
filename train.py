@@ -26,7 +26,9 @@ def main():
         all_rews.append(rewards)
 
     with open(f"models/{uuid}_rewards.json", "w") as f:
-        obj = {(offset + N * (i + 1)) / 1000: rews for i, rews in enumerate(all_rews)}
+        obj = {
+            (offset + N * (i + 1)) / 1000: list(rews) for i, rews in enumerate(all_rews)
+        }
         json.dump(obj, f)
 
 

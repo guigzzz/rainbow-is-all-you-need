@@ -7,7 +7,7 @@ import logging as log
 
 def load_from_checkpoint(uuid: str) -> Tuple[PPO, int]:
     p = Path("models/")
-    files = sorted([f for f in p.iterdir() if uuid in f.name])
+    files = sorted([f for f in p.iterdir() if uuid in f.name and ".model" in f.name])
 
     if len(files) == 0:
         raise Exception(f"Failed to find any models matching {uuid} in {p}")
