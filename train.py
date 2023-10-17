@@ -2,6 +2,8 @@ from eval import eval_model
 from checkpoint import load_from_checkpoint
 import json
 import logging as log
+from numpy.typing import NDArray
+import numpy as np
 
 
 def main():
@@ -11,6 +13,12 @@ def main():
 
     uuid = "3eccbcb1-894f-4721-810b-fd5d0279cb73"
     model, offset = load_from_checkpoint(uuid)
+
+    def dump_rewards(iters: int, rewards: NDArray[np.float64]):
+        with open(f"models/{uuid}_rewards.jsonl", "a") as f:
+            obj = {"iters": iters, "rewards": rewards.tolist()}
+            json.dump(obj, f)
+            f.write("\n")
 
     for i in range(100):
         model.learn(total_timesteps=N)
@@ -24,12 +32,7 @@ def main():
         model.save(f"models/{uuid}_{iters}k.model")
 
         all_rews.append(rewards)
-
-    with open(f"models/{uuid}_rewards.json", "w") as f:
-        obj = {
-            (offset + N * (i + 1)) / 1000: list(rews) for i, rews in enumerate(all_rews)
-        }
-        json.dump(obj, f)
+        dump_rewards(int(iters), rewards)
 
 
 if __name__ == "__main__":
