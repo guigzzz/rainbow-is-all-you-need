@@ -9,7 +9,7 @@ import json
 MODELS = Path("models/")
 
 
-def load_from_checkpoint(uuid: str) -> Tuple[PPO, int]:
+def load_from_checkpoint(uuid: str, model: PPO) -> Tuple[PPO, int]:
     files = sorted(
         [f for f in MODELS.iterdir() if uuid in f.name and ".model" in f.name]
     )
@@ -27,9 +27,6 @@ def load_from_checkpoint(uuid: str) -> Tuple[PPO, int]:
     )
 
     log.info(f"Loading latest model: {last}")
-
-    env = X2Env()
-    model = PPO("MlpPolicy", env, seed=0, learning_rate=0.0001, batch_size=256)
 
     model.set_parameters(str(last))
 

@@ -17,6 +17,7 @@ class State:
     random: Random
     num_invalid_moves: int
     next_play: int
+    next_next_play: int
 
 
 def copy(state: State) -> State:
@@ -27,6 +28,7 @@ def copy(state: State) -> State:
         Random(state.random.seed),
         state.num_invalid_moves,
         state.next_play,
+        state.next_next_play,
     )
 
 
@@ -36,7 +38,8 @@ def make_state(seed: Optional[int] = None) -> State:
     max = 6
     random = Random(seed)
     next_play = random.randint(min, max)
-    return State(grid, min, max, random, 0, next_play)
+    next_next_play = random.randint(min, max)
+    return State(grid, min, max, random, 0, next_play, next_next_play)
 
 
 def try_combine(
@@ -251,8 +254,9 @@ from numpy.typing import NDArray
 def state_to_obs(state: State, arr: NDArray[np.float64]) -> NDArray[np.float64]:
     offset = state.min - 1
     arr[0] = state.next_play - offset
+    arr[1] = state.next_next_play - offset
     flat = state.grid.flatten()
-    arr[1:] = np.where(flat == 0, 0, flat - offset)
+    arr[2:] = np.where(flat == 0, 0, flat - offset)
 
     return arr
 
@@ -265,7 +269,7 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
 
         self.action_space = gym.spaces.Discrete(5)
 
-        self.__observation = np.zeros((26,))
+        self.__observation = np.zeros((27,))
         self.observation_space = gym.spaces.Box(
             0, 12, shape=self.__observation.shape, dtype=np.float64
         )
@@ -281,7 +285,11 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
         result = place(state, int(action), state.next_play)
 
         if result.valid_move:
-            state.next_play = self.__generate_tile()
+            if state.next_next_play < state.min:
+                state.next_next_play = self.__generate_tile()
+
+            state.next_play = state.next_next_play
+            state.next_next_play = self.__generate_tile()
 
         obs = state_to_obs(result.state, self.__observation)
 
