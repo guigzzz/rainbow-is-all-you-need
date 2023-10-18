@@ -6,9 +6,9 @@ from x2 import X2Env
 from stable_baselines3 import PPO
 
 
-def eval_model(model: PPO, games: int = 10_000) -> NDArray[np.float64]:
+def eval_model(model: PPO, rows: int, games: int = 10_000) -> NDArray[np.float64]:
     def make_env(seed: int) -> X2Env:
-        env = X2Env()
+        env = X2Env(rows)
         env.reset(seed=seed)
         return env
 

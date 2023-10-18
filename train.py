@@ -12,9 +12,11 @@ from multiprocessing import Process, Queue, set_start_method
 
 set_start_method(method="spawn", force=True)
 
+ROWS = 7
+
 
 def make_env_and_model():
-    env = X2Env()
+    env = X2Env(rows=ROWS)
     model = PPO("MlpPolicy", env, seed=0, learning_rate=0.0001, batch_size=256)
     return model
 
@@ -46,7 +48,7 @@ def eval_thread(queue: Queue, uuid: str):
         model = make_env_and_model()
         model.set_parameters(str(model_path))
 
-        rewards = eval_model(model)
+        rewards = eval_model(model, ROWS)
 
         log.info(
             f"[EVAL] after {iters}k learning steps, mean rewards: {rewards.mean():0.2f}, std={rewards.std():0.2f}"
@@ -58,15 +60,18 @@ def eval_thread(queue: Queue, uuid: str):
 def main():
     N = 50_000
 
-    env = X2Env()
-    model = PPO("MlpPolicy", env, seed=0, learning_rate=0.0001, batch_size=256)
+    model = make_env_and_model()
 
     # uuid = str(uuid4())
     # offset = 0
 
-    # # Two tile lookahead
-    uuid = "0fdef917-edc8-4a87-a2b0-be201cdb3d91"
+    # Two tile + 7 rows
+    uuid = "fc5d76f5-0d35-4ed6-aa91-ded25323db7a"
     model, offset = load_from_checkpoint(uuid, model)
+
+    # # Two tile lookahead
+    # uuid = "0fdef917-edc8-4a87-a2b0-be201cdb3d91"
+    # model, offset = load_from_checkpoint(uuid, model)
 
     # # Single tile lookahead
     # uuid = "3eccbcb1-894f-4721-810b-fd5d0279cb73"
