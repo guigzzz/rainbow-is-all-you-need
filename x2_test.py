@@ -497,11 +497,11 @@ class TestX2(unittest.TestCase):
         state.min = 2
         state.next_play = 7
 
-        arr = np.zeros((26,))
+        arr = np.zeros((27,))
 
         obs = state_to_obs(state, arr)
 
-        self.assertEqual(obs.tolist(), [6, 12, 1] + [0] * 23)
+        self.assertEqual(obs.tolist(), [6, 3, 12, 1] + [0] * 23)
 
     def run_test_move(self, move, new_min=None, new_max=None):
         state = make_state(seed=0)
@@ -543,22 +543,25 @@ class TestEnv(unittest.TestCase):
         env.reset(seed=0)
 
         self.assertEqual(env.get_state().next_play, 4)
+        self.assertEqual(env.get_state().next_next_play, 4)
 
         obs, reward, game_over, _, _ = env.step(np.int64(0))
 
-        expected = [4, 4] + [0] * 24
+        expected = [4, 1, 4] + [0] * 24
         self.assertEqual(obs.tolist(), expected)
         self.assertEqual(reward, 1)
         self.assertFalse(game_over)
         self.assertEqual(env.get_state().next_play, 4)
+        self.assertEqual(env.get_state().next_next_play, 1)
 
         obs, reward, game_over, _, _ = env.step(np.int64(2))
 
-        expected = [1, 4, 0, 4, 0] + [0] * 21
+        expected = [1, 3, 4, 0, 4, 0] + [0] * 21
         self.assertEqual(obs.tolist(), expected)
         self.assertEqual(reward, 1)
         self.assertFalse(game_over)
         self.assertEqual(env.get_state().next_play, 1)
+        self.assertEqual(env.get_state().next_next_play, 3)
 
 
 if __name__ == "__main__":

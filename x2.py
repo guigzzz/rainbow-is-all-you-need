@@ -1,7 +1,3 @@
-N = 5
-
-INCREMENT_FACTOR = 2
-
 from typing import Optional, Tuple
 from dataclasses import dataclass
 from random import Random
@@ -32,8 +28,8 @@ def copy(state: State) -> State:
     )
 
 
-def make_state(seed: Optional[int] = None) -> State:
-    grid = np.zeros((5, 5))
+def make_state(seed: Optional[int] = None, rows: int = 5) -> State:
+    grid = np.zeros((rows, 5))
     min = 1
     max = 6
     random = Random(seed)
@@ -68,8 +64,9 @@ def try_combine(
 
 
 def move_down_once(grid: NDArray[np.float64]) -> Optional[Tuple[int, int]]:
-    for i in range(N - 1):
-        for j in range(N):
+    (N_i, N_j) = grid.shape
+    for i in range(N_i - 1):
+        for j in range(N_j):
             if grid[i][j] == 0 and grid[i + 1][j] > 0:
                 grid[i][j] = grid[i + 1][j]
                 grid[i + 1][j] = 0
@@ -151,8 +148,11 @@ def sanity_check_grid(
     grid: NDArray[np.float64], state: State, location: int, value: int
 ):
     min, max = state.min, state.max
-    for i in range(N - 1):
-        for j in range(N):
+
+    (N_i, N_j) = grid.shape
+
+    for i in range(N_i - 1):
+        for j in range(N_j):
             v = grid[i][j]
             if v == 0 and grid[i + 1][j] > 0:
                 print_grid(grid)
@@ -165,8 +165,11 @@ def sanity_check_grid(
 
 def find_prev_min(state: State) -> Optional[Tuple[int, int]]:
     prev_min = state.min - 1
-    for i in range(N):
-        for j in range(N):
+
+    (N_i, N_j) = state.grid.shape
+
+    for i in range(N_i):
+        for j in range(N_j):
             if state.grid[i][j] == prev_min:
                 state.grid[i][j] = 0
 
@@ -196,16 +199,18 @@ def place(state: State, location: int, value: int) -> PlaceResult:
 
     state.num_invalid_moves = 0
 
+    N_i = state.grid.shape[0]
+
     # find spot
     filled_i = None
-    for i in range(N):
+    for i in range(N_i):
         if grid[i][location] == 0:
             grid[i][location] = value
             filled_i = i
             break
 
         # placing on full column. Just increment the top value
-        if i == N - 1 and grid[i][location] == value:
+        if i == N_i - 1 and grid[i][location] == value:
             filled_i = i
             grid[i][location] += 1
 
@@ -261,18 +266,23 @@ def state_to_obs(state: State, arr: NDArray[np.float64]) -> NDArray[np.float64]:
     return arr
 
 
+COLUMNS = 5
+
+
 class X2Env(gym.Env[NDArray[np.float64], np.int64]):
-    def __init__(self) -> None:
+    def __init__(self, rows=5) -> None:
         super().__init__()
 
         self._state: Optional[State] = None
 
-        self.action_space = gym.spaces.Discrete(5)
+        self.action_space = gym.spaces.Discrete(COLUMNS)
 
-        self.__observation = np.zeros((27,))
+        self.__observation = np.zeros((2 + rows * COLUMNS,))
         self.observation_space = gym.spaces.Box(
             0, 12, shape=self.__observation.shape, dtype=np.float64
         )
+
+        self._rows = rows
 
         self.__is_game_over = False
         self.__total_reward = 0
@@ -306,8 +316,8 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
         )
 
     def reset(self, *, seed: Optional[int] = None, _: Optional[Dict[str, Any]] = None):
-        self._state = make_state(seed)
-        self.action_space = gym.spaces.Discrete(5, seed)
+        self._state = make_state(seed, self._rows)
+        self.action_space = gym.spaces.Discrete(COLUMNS, seed)
 
         return state_to_obs(self._state, self.__observation), self.__info
 
@@ -317,7 +327,7 @@ class X2Env(gym.Env[NDArray[np.float64], np.int64]):
 
     def get_state(self) -> State:
         if self._state is None:
-            self._state = make_state()
+            self._state = make_state(rows=self._rows)
 
         return self._state
 
